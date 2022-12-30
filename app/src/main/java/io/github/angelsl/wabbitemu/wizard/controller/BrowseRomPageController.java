@@ -4,7 +4,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import io.github.angelsl.wabbitemu.R;
 import io.github.angelsl.wabbitemu.fragment.BrowseFragment;

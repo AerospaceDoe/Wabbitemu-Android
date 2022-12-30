@@ -1,6 +1,6 @@
 package io.github.angelsl.wabbitemu.wizard.controller;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 

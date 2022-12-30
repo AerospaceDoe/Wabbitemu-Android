@@ -3,7 +3,7 @@ package io.github.angelsl.wabbitemu.wizard;
 import java.util.Stack;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;

@@ -1,6 +1,6 @@
 package io.github.angelsl.wabbitemu.wizard.controller;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import io.github.angelsl.wabbitemu.R;
 import io.github.angelsl.wabbitemu.wizard.WizardNavigationController;
