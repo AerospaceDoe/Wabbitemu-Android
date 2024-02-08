@@ -112,7 +112,7 @@ public class BrowseFragment extends Fragment {
             protected ArrayAdapter<String> doInBackground(final Void... params) {
                 final List<String> files = mFileUtils.getValidFiles(extensionsRegex);
                 Log.d("BrowseFragment", "doInBackground: " + extensionsRegex + " " + files.size());
-                return new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, files.size() > 0 ? files : Collections.singletonList("No files found"));
+                return new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, files);
             }
 
             @Override
