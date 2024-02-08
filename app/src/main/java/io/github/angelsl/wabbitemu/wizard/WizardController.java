@@ -4,6 +4,8 @@ import java.util.Stack;
 
 import android.app.Activity;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;
@@ -112,7 +114,7 @@ public class WizardController {
 		showPage(nextPageId, data);
 	}
 
-	private void showPage(int nextPageId, Object data) {
+	private void showPage(int nextPageId, @Nullable Object data) {
 		mViewFlipper.setDisplayedChild(mIdToPositionMap.get(nextPageId));
 		mCurrentController.onShowing(data);
 	}

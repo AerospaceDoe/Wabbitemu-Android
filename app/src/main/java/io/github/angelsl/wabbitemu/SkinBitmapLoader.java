@@ -494,7 +494,7 @@ public class SkinBitmapLoader {
 			// mode
 			return mKeymapPixels[mKeymapPixels.length - (index % mKeymapWidth)];
 		} else if (index < 0) {
-			return mKeymapPixels[0 - (index % mKeymapWidth)];
+			return mKeymapPixels[-(index % mKeymapWidth)];
 		}
 
 		return mKeymapPixels[index];
@@ -557,11 +557,10 @@ public class SkinBitmapLoader {
 			return null;
 		}
 
-		final Rect scaledRect = new Rect(
+		return new Rect(
 				(int) (buttonRect.left * mKeymapWidthScale * mWidthMaxScale) + mSkinX - mSkinRect.left,
 				(int) (buttonRect.top * mKeymapHeightScale * mHeightMaxScale) + mSkinY - mSkinRect.top,
 				(int) (buttonRect.right * mKeymapWidthScale * mWidthMaxScale) + mSkinX - mSkinRect.left,
 				(int) (buttonRect.bottom * mKeymapHeightScale * mHeightMaxScale) + mSkinY - mSkinRect.top);
-		return scaledRect;
 	}
 }

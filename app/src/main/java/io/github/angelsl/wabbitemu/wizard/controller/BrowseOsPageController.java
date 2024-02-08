@@ -1,10 +1,10 @@
 package io.github.angelsl.wabbitemu.wizard.controller;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
 
 import io.github.angelsl.wabbitemu.R;
 import io.github.angelsl.wabbitemu.calc.CalcModel;

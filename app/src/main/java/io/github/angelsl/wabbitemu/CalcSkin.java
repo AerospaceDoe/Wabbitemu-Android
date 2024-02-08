@@ -14,6 +14,7 @@ import android.graphics.Rect;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -123,9 +124,10 @@ public class CalcSkin extends View {
 		if (Color.red(color) == 0xFF) {
 			return false;
 		}
-
+		//TODO refactor
 		final int group = Color.green(color) >> 4;
 		final int bit = Color.blue(color) >> 4;
+		Log.d("CalcSkin", "Group clicked: " + group + " and bit: " + bit);
 		if ((group > 7) || (bit > 7)) {
 			return false;
 		}

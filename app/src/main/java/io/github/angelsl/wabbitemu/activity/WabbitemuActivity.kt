@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.preference.PreferenceManager
@@ -25,6 +26,7 @@ import io.github.angelsl.wabbitemu.R
 import io.github.angelsl.wabbitemu.SkinBitmapLoader
 import io.github.angelsl.wabbitemu.calc.CalcModel
 import io.github.angelsl.wabbitemu.calc.CalculatorManager
+import io.github.angelsl.wabbitemu.fragment.EmulatorButtonsFragment
 import io.github.angelsl.wabbitemu.fragment.EmulatorFragment
 import io.github.angelsl.wabbitemu.utils.*
 import java.io.File
@@ -55,12 +57,12 @@ class WabbitemuActivity : AppCompatActivity() {
     private val mSkinLoader = SkinBitmapLoader.getInstance()
     private val mVisibilityListener = VisibilityChangeListener()
     private val mSharedPrefs by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
-    private var mEmulatorFragment: EmulatorFragment? = null
+    private var mEmulatorFragment: EmulatorButtonsFragment? = null
     private lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mDrawerList: ListView
     private var mWasUserLaunched = false
     private fun handleFile(f: File, runnable: Runnable) {
-        mEmulatorFragment!!.handleFile(f, runnable)
+//        mEmulatorFragment!!.handleFile(f, runnable)
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,8 +98,10 @@ class WabbitemuActivity : AppCompatActivity() {
                 }
             }
         }
+        setTheme(R.style.Wabbitemu)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         setContentView(R.layout.main)
-        mEmulatorFragment = supportFragmentManager.findFragmentById(R.id.content_frame) as EmulatorFragment
+        mEmulatorFragment = supportFragmentManager.findFragmentById(R.id.content_frame) as EmulatorButtonsFragment
         attachMenu()
         if (isFirstRun) {
             mWasUserLaunched = false
@@ -284,7 +288,7 @@ class WabbitemuActivity : AppCompatActivity() {
     }
 
     private fun screenshotCalc() {
-        val screenshot = mEmulatorFragment!!.screenshot
+        val screenshot: Bitmap? = null//mEmulatorFragment!!.screenshot
         if (screenshot == null) {
             ErrorUtils.showErrorDialog(this, R.string.errorScreenshot)
             return
@@ -356,7 +360,7 @@ class WabbitemuActivity : AppCompatActivity() {
     }
 
     private fun resetCalc() {
-        mEmulatorFragment!!.resetCalc()
+//        mEmulatorFragment!!.resetCalc()
     }
 
     private fun launchSettings() {

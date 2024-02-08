@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import io.github.angelsl.wabbitemu.utils.IntentConstants;
 import io.github.angelsl.wabbitemu.utils.OnBrowseItemSelected;
 import io.github.angelsl.wabbitemu.utils.ViewUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BrowseFragment extends Fragment {
@@ -65,6 +68,7 @@ public class BrowseFragment extends Fragment {
             });
 
             startSearch(view, mExtensionsRegex);
+            Log.d("BrowseFragment", "onCreateView: " + mExtensionsRegex);
         }
 
         return view;
@@ -107,12 +111,14 @@ public class BrowseFragment extends Fragment {
             @Override
             protected ArrayAdapter<String> doInBackground(final Void... params) {
                 final List<String> files = mFileUtils.getValidFiles(extensionsRegex);
-                return new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, files);
+                Log.d("BrowseFragment", "doInBackground: " + extensionsRegex + " " + files.size());
+                return new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, files.size() > 0 ? files : Collections.singletonList("No files found"));
             }
 
             @Override
             protected void onPostExecute(final ArrayAdapter<String> adapter) {
                 mLoadingSpinner.setVisibility(View.GONE);
+                Log.d("BrowseFragment", "onPostExecute: " + extensionsRegex + " " + adapter.getCount());
                 mListView.setAdapter(adapter);
                 mSearchTask = null;
             }
