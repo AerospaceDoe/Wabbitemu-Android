@@ -81,7 +81,6 @@ class WabbitemuActivity : AppCompatActivity() {
         mCalcManager.initialize(this, sBestCacheDir)
         mSkinLoader.initialize(this)
         val fileName = lastRomSetting
-        val runnable = launchRunnable
         if (fileName != null) {
             val file = File(fileName)
             mCalcManager.loadRomFile(file) { errorCode ->
@@ -94,7 +93,8 @@ class WabbitemuActivity : AppCompatActivity() {
                             errorCode
                         )
                     )
-                    runnable.run()
+//                    launchRunnable.run()
+//                    Toast.makeText(this, "Unable to load ROM; error code $errorCode", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -103,6 +103,7 @@ class WabbitemuActivity : AppCompatActivity() {
         setContentView(R.layout.main)
         mEmulatorFragment = supportFragmentManager.findFragmentById(R.id.content_frame) as EmulatorButtonsFragment
         attachMenu()
+        Log.d("Wabbitemu", "onCreate: isFirstRun: $isFirstRun, lastRomModel=$lastRomModel")
         if (isFirstRun) {
             mWasUserLaunched = false
             val wizardIntent = Intent(this, WizardActivity::class.java)
@@ -115,7 +116,7 @@ class WabbitemuActivity : AppCompatActivity() {
         if (lastRomModel != CalcModel.NO_CALC) {
             mSkinLoader.loadSkinAndKeymap(lastRomModel)
         } else if (fileName == null || fileName == "") {
-            runnable.run()
+//            runnable.run()
         }
     }
 
