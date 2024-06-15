@@ -3,6 +3,7 @@
 #include "linksendvar.h"
 #include "sendfile.h"
 #include "exportvar.h"
+#include <pthread.h>
 
 static LPCALC lpCalc;
 static int redPalette[256];
