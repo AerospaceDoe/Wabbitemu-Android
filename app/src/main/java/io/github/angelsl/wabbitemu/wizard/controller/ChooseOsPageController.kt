@@ -107,6 +107,7 @@ class ChooseOsPageController(private val mView: ChooseOsPageView) :
         protected override fun doInBackground(vararg params: Void?): NextOsAction {
             val osAction = tryLoadOsPage()
             if (osAction != null) {
+                Log.d("Wabbitemu", "Returned successfully")
                 return osAction
             }
             val msiAction = tryLoadMsi()
@@ -138,28 +139,46 @@ class ChooseOsPageController(private val mView: ChooseOsPageView) :
                     extensionPattern = Pattern.compile(".*\\.8cu", Pattern.CASE_INSENSITIVE)
                     extension = ".8cu"
                 }
-                else -> return null
+                else -> {
+                    Log.wtf("Wabbitemu", "Why was calc model $mCalcModel??")
+                    return null
+                }
             }
+            var counter = 0
+            Log.v("Wabbitemu", counter++.toString())
             val cookieManager = CookieManager()
+            Log.v("Wabbitemu", counter++.toString())
             val connection: OkHttpClient = OkHttpClient.Builder()
                 .cookieJar(JavaNetCookieJar(cookieManager))
                 .build()
+            Log.v("Wabbitemu", counter++.toString())
             val msiLink = tryLoadMsiPage(connection) ?: return null
+            Log.v("Wabbitemu", counter++.toString())
             val request: Request = Request.Builder()
                 .url(msiLink)
                 .addHeader("User-Agent", OsDownloadPageController.USER_AGENT)
                 .build()
             var randomAccessFile: RandomAccessFile? = null
             try {
+                Log.v("Wabbitemu", counter++.toString())
                 val response = connection.newCall(request).execute()
+                Log.v("Wabbitemu", counter++.toString())
                 val msiFile = File(WabbitemuActivity.sBestCacheDir, "msiFile.msi")
+                Log.v("Wabbitemu", counter++.toString())
                 val fileOutputStream = FileOutputStream(msiFile)
+                Log.v("Wabbitemu", counter++.toString())
                 fileOutputStream.write(response.body!!.bytes())
+                Log.v("Wabbitemu", counter++.toString())
                 fileOutputStream.close()
+                Log.v("Wabbitemu", counter++.toString())
                 randomAccessFile = RandomAccessFile(msiFile, "r")
+                Log.v("Wabbitemu", counter++.toString())
                 val msiDatabase = MsiDatabase()
+                Log.v("Wabbitemu", counter++.toString())
                 msiDatabase.open(randomAccessFile)
+                Log.v("Wabbitemu", counter++.toString())
                 val msiHandler = MsiHandler(msiDatabase)
+                Log.v("Wabbitemu", counter++.toString())
                 outputStream = null //is initialized by cabParser
                 for ((i, item) in msiDatabase.Items.withIndex()) {
                     if (item.realName.endsWith(".cab")) {
@@ -177,9 +196,13 @@ class ChooseOsPageController(private val mView: ChooseOsPageView) :
                         return NextOsAction(NextAction.LOAD_MSI, osFile.absolutePath)
                     }
                 }
+                Log.v("Wabbitemu", counter++.toString())
             } catch (_: IOException) {
             } catch (_: CabException) {
-            } finally {
+            } catch (t: Throwable) {
+                Log.e("Wabbitemu", "Failed to download", t)
+            }
+            finally {
                 try {
                     randomAccessFile?.close()
                 } catch (e: IOException) {
@@ -195,13 +218,20 @@ class ChooseOsPageController(private val mView: ChooseOsPageView) :
                     .url("https://epsstore.ti.com/OA_HTML/csksxvm.jsp;jsessionid=b401c39d98b4886b458efc7dd5d8327db3bc7777671e65db5db506a2e6bafa8c.e34TbNuKax4RaO0Mah0LaxaTchyRe0?jfn=ZGC7FD5432DD1749EE35764C594E5B43B3511EE256D94188614786F910B87AE331265643E242F68AFA6CE2579F26775AF7EC&lepopus=bE7LmZ2FxS3jD0l7eyTp1L9xkc&lepopus_pses=ZG6B09CB0A3807E876346D50579677E97CB0AB13CC596FF029053030558FF7479CA28505CDAD2053EE19E6BE618AC72AA757DCFBE5884A6B21&oas=eFTq1K0o_gpUMQl6PJojPw..&nSetId=130494&nBrowseCategoryId=10464&cskViewSolSourcePage=cskmbasicsrch.jsp%3FcategoryId%3D10464%26fRange%3Dnull%26fStartRow%3D0%26fSortBy%3D2%26fSortByOrder%3D1")
                     .addHeader("User-Agent", OsDownloadPageController.USER_AGENT)
                     .build()
+                Log.d("Wabbitemu", "Built request")
                 val pageResponse = connection.newCall(pageRequest).execute()
-                Jsoup.parse(pageResponse.body!!.string())
+                Log.d("Wabbitemu", "Got response")
+                Jsoup.parse(pageResponse.body!!.string()).also {
+                Log.d("Wabbitemu", "Parsed doc: ${it.html()}")
+
+                }
             } catch (e: IOException) {
+                Log.e("Wabbitemu", "Failed to download", e)
                 return null
             }
             val elements = document.select("#rightcol a")
             if (elements.isEmpty()) {
+                Log.e("Wabbitemu", "No elements")
                 return null
             }
             val element = elements.iterator().next()
@@ -265,6 +295,8 @@ class ChooseOsPageController(private val mView: ChooseOsPageView) :
                 NextAction.ERROR -> {
                     mNavController!!.hideNextButton()
                     mView.loadingSpinner.visibility = View.GONE
+                    Log.e("Wabbitemu", "" + action.mData);
+
                     mView.message.setText(R.string.errorWebPageDownloadError)
                 }
             }

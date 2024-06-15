@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
+
+import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -133,6 +135,7 @@ public class OsDownloadPageController implements WizardPageController {
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            Log.e("Wabbitemu", description + " " + failingUrl);
             mView.showProgressBar(false);
             final AlertDialog dialog = new AlertDialog.Builder(view.getContext())
                     .setMessage(R.string.errorWebPageDownloadError)
