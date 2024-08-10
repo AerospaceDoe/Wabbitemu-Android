@@ -23,6 +23,13 @@ JNIEXPORT void JNICALL Java_io_github_angelsl_wabbitemu_calc_CalcInterface_Initi
  */
 JNIEXPORT jint JNICALL Java_io_github_angelsl_wabbitemu_calc_CalcInterface_LoadFile
   (JNIEnv *, jclass, jstring);
+/*
+ * Class:     io_github_angelsl_wabbitemu_CalcInterface
+ * Method:    LoadFile
+ * Signature: (Landroid/net/Uri;)I
+ */
+/*JNIEXPORT jint JNICALL Java_io_github_angelsl_wabbitemu_calc_CalcInterface_LoadFile
+  (JNIEnv *, jobject, jstring);*/
 
 /*
  * Class:     io_github_angelsl_wabbitemu_CalcInterface

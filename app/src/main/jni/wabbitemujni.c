@@ -4,6 +4,13 @@
 #include "sendfile.h"
 #include "exportvar.h"
 #include <pthread.h>
+#include <android/log.h>
+
+#include <android/log.h>
+#include <jni.h>
+//#include <android/content/ContentProvider.h>
+//#include <android/content/res/AssetManager.h>
+//
 
 static LPCALC lpCalc;
 static int redPalette[256];
@@ -108,15 +115,53 @@ JNIEXPORT jint JNICALL Java_io_github_angelsl_wabbitemu_calc_CalcInterface_Creat
 	mclose(romfile);
 	return 0;
 }
+/*JNIEXPORT jint JNICALL Java_io_github_angelsl_wabbitemu_calc_CalcInterface_passUriToNative(JNIEnv *env, jobject thiz, jstring uri_string) {
+    const char *uriStr = env->GetStringUTFChars(uri_string, 0);
+    __android_log_print(ANDROID_LOG_DEBUG, "NativeCode", "Received URI: %s", uriStr);
+
+    // Open the file using content resolver
+    AAssetManager *assetManager = AAssetManager_fromJava(env, thiz);
+    if (assetManager == nullptr) {
+        __android_log_print(ANDROID_LOG_ERROR, "NativeCode", "Failed to get AssetManager");
+        return;
+    }
+
+    AAsset *asset = AAssetManager_open(assetManager, uriStr, AASSET_MODE_BUFFER);
+    if (asset == nullptr) {
+        __android_log_print(ANDROID_LOG_ERROR, "NativeCode", "Failed to open asset");
+        return;
+    }
+
+    // Read file contents
+    off_t fileSize = AAsset_getLength(asset);
+    char *buffer = (char *) malloc(fileSize + 1);
+    AAsset_read(asset, buffer, fileSize);
+    buffer[fileSize] = '\0'; // Null-terminate the string
+
+    // Use the file contents (buffer) as needed
+    __android_log_print(ANDROID_LOG_DEBUG, "NativeCode", "File contents: %s", buffer);
+
+    // Clean up
+    free(buffer);
+    AAsset_close(asset);
+    env->ReleaseStringUTFChars(uri_string, uriStr);
+}*/
 
 JNIEXPORT jint JNICALL Java_io_github_angelsl_wabbitemu_calc_CalcInterface_LoadFile
 		(JNIEnv *env, jclass classObj, jstring filePath) {
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "Trying to load file from JNI");
 	const char *path = (*env)->GetStringUTFChars(env, filePath, JNI_FALSE);
-	TIFILE_t *tifile = importvar(path, TRUE);
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "path: ");
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", path);
+    TIFILE_t *tifile = importvar(path, TRUE);
 	if (!tifile || !lpCalc) {
+        __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "Couldn't print tiff file, returning LERR_FILE (");
+        __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", !lpCalc ? "lpCalc is NULL" : "lpCalc is not NULL");
+        __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", !tifile ? "tifile is NULL" : "tifile is not NULL");
 		return (jint) LERR_FILE;
 	}
 
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "Reading SendFile");
 	int result = SendFile(lpCalc, path, SEND_CUR);
 	return result;
 }
