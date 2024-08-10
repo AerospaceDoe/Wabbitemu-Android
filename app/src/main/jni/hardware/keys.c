@@ -495,6 +495,7 @@ void keypad_press(CPU_t *cpu, int group, int bit)
 {
 	if (group == KEYGROUP_ON && bit == KEYBIT_ON)
 	{
+        __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "Trying to load file from JNI");
 		cpu->pio.keypad->on_pressed |= KEY_KEYBOARDPRESS;
 	}
 	else

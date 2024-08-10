@@ -1,3 +1,4 @@
+#include <errno.h>
 #include "stdafx.h"
 
 #include "var.h"
@@ -238,7 +239,7 @@ TIFILE_t* ImportFlashFile(FILE *infile, TIFILE_t *tifile) {
 	int TotalSize		=  0;
 	int TotalPages		=  0;
 	int done			=  0;
-	
+
 	if (tifile->flash->type == FLASH_TYPE_OS) {
 		// Find the first page, usually after the first line
 		do {
@@ -435,7 +436,7 @@ void ReadTiFileHeader(FILE *infile, TIFILE_t *tifile) {
 
 	fread(headerString, 1, 8, infile);
 	rewind(infile);
-	
+
 	if (!_strnicmp(headerString, DETECT_STR, 8) ||
 		!_strnicmp(headerString, DETECT_CMP_STR, 8)) {
 		tifile->type = SAV_TYPE;
@@ -648,13 +649,13 @@ TIFILE_t* ImportVarData(FILE *infile, TIFILE_t *tifile) {
 			return ImportVarFile(infile, tifile, 0);
 		default:
 			return NULL;
-	}	
+	}
 }
 
 TIFILE_t* importvar(LPCTSTR filePath, BOOL only_check_header) {
 	FILE *infile = NULL;
 	TIFILE_t *tifile;
-	
+
 	TCHAR extension[5] = _T("");
 	const TCHAR *pext = _tcsrchr(filePath, _T('.'));
 	if (pext != NULL) {
@@ -663,18 +664,26 @@ TIFILE_t* importvar(LPCTSTR filePath, BOOL only_check_header) {
 
 	tifile = InitTiFile();
 	if (tifile == NULL) {
+        __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "TIFile was null after init");
 		return NULL;
 	}
+
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "TIFile successful init");
 
 	if (!_tcsicmp(extension, _T(".lab"))) {
 		tifile->type = LABEL_TYPE;
 		return tifile;
 	}
 
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "TIFile not label");
+
 	if (!_tcsicmp(extension, _T(".brk"))) {
 		tifile->type = BREAKPOINT_TYPE;
 		return tifile;
 	}
+
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "TIFile not breakpoint");
+
 
 #ifdef _WINDOWS
 	if (!_tcsicmp(extension, _T(".tig")) || !_tcsicmp(extension, _T(".zip")) ) {
@@ -686,22 +695,38 @@ TIFILE_t* importvar(LPCTSTR filePath, BOOL only_check_header) {
 	}
 #endif
 
-	_tfopen_s(&infile, filePath, _T("rb"));
-	if (infile == NULL) {
+    _tfopen_s(&infile, filePath, _T("rb"));
+
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", "open rb success");
+
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu", infile == NULL ? "infile is null" : "Infile not null");
+    __android_log_write(ANDROID_LOG_ERROR, "Wabbitemu", "Error: ");
+//    __android_log_write(ANDROID_LOG_ERROR, "Wabbitemu", (const char *) errno);
+    __android_log_write(ANDROID_LOG_ERROR, "Wabbitemu", strerror(errno));
+
+    if (infile == NULL) {
 		return FreeTiFile(tifile);
 	}
 
 	ReadTiFileHeader(infile, tifile);
+
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu",  tifile->type == ROM_TYPE ? "TI file is rom" : "TI File is not ROM");
+
 	// The last part is to make sure we don't allow files that cant be imported but
 	// assumed to be ROMs until we try to read data. Why? because we don't read the
 	// size of the data till we import. Since importing a ROM is fast and I don't
 	// care enough to fix as this was meant for speed checking files on drop
 	if (only_check_header && tifile->type != ROM_TYPE && tifile->type != SAV_TYPE) {
 		fclose(infile);
+
+        __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu",  "Returning TI File beacause it is not rom or sav");
+
 		return tifile;
 	}
 
 	tifile = ImportVarData(infile, tifile);
+    __android_log_write(ANDROID_LOG_DEBUG, "Wabbitemu",  "Imported var data from infile and tifile");
+
 	fclose(infile);
 	return tifile;
 }
