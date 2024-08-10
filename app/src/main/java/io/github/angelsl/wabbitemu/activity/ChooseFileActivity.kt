@@ -3,8 +3,11 @@ package io.github.angelsl.wabbitemu.activity
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,8 +17,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -29,11 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.preference.PreferenceManager
+import io.github.angelsl.wabbitemu.BuildConfig
 import io.github.angelsl.wabbitemu.R
 import io.github.angelsl.wabbitemu.calc.CalcModel
 import io.github.angelsl.wabbitemu.components.SimpleRadioGroup
 import io.github.angelsl.wabbitemu.utils.PreferenceConstants
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 class ChooseFileActivity : ComponentActivity() {
     companion object {
@@ -66,13 +70,39 @@ class ChooseFileActivity : ComponentActivity() {
             val filePickerLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.OpenDocument(),
                 onResult = { uri: Uri? ->
+                    Log.d("Wabbitemu", "Got uri: $uri")
                     uri?.let {
                         val fileName = getFileName(it)
-                        if (isValidFile(fileName)) {
-                            // Handle the file as needed
-                            scope.launch {
-                                handleFile(uri, selectedModel)
+                        if (fileName != null && isValidFile(fileName)) {
+                            val destinationFile =
+                                File(filesDir, "copied_rom.${fileName.substringAfterLast('.')}")
+                            contentResolver.openInputStream(uri)?.use { input ->
+                                FileOutputStream(destinationFile).use { output ->
+                                    val buffer =
+                                        ByteArray(4 * 1024) // Buffer size for efficient copying
+                                    var read: Int
+                                    while (input.read(buffer).also { read = it } != -1) {
+                                        output.write(buffer, 0, read)
+                                    }
+                                    output.flush()
+                                }
                             }
+                            Log.d(
+                                "Wabbitemu",
+                                "onCreate: Destination file length: ${destinationFile.length()}"
+                            )
+//                            assert(destinationFile.length() == uri.toFile().length())
+                            // Handle the file as needed
+                            handleFile(destinationFile.absolutePath, selectedModel)
+                            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                Log.d("Wabbitemu", "onCreate: Requesting all files permission")
+                                startActivity(
+                                    Intent(
+                                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                        Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                                    )
+                                )
+                            }*/
                         } else {
                             Toast.makeText(
                                 this@ChooseFileActivity,
@@ -95,14 +125,17 @@ class ChooseFileActivity : ComponentActivity() {
             ) {
                 Text(text = "A ROM file is needed to make this app work. Previous versions included a wizard/scraper bot for downloading a ROM, but Texas Instruments updated their website, and the scraper bot stopped working. The project is open-source, please feel free to contribute.")
                 SimpleRadioGroup(
-                    CalcModel.entries,
+                    CalcModel.entries.minus(CalcModel.NO_CALC),
                     selectedModel,
-                    { strings[it.name.replace("_", "").lowercase()] ?: "None" }) {
+                    { strings[it.name.replace("_", "").lowercase()] ?: "" }) {
                     selectedModel = it
                 }
-                Button(onClick = {
-                    filePickerLauncher.launch(arrayOf("*/*"))
-                }) {
+                Button(
+                    onClick = {
+                        filePickerLauncher.launch(arrayOf("*/*"))
+                    },
+                    enabled = selectedModel != CalcModel.NO_CALC
+                ) {
                     Text("Choose ROM file")
                 }
             }
@@ -131,20 +164,22 @@ class ChooseFileActivity : ComponentActivity() {
                 result = result?.substring(cut + 1)
             }
         }
+        Log.d("Wabbitemu", "getFileName: $result")
         return result
     }
 
-    private fun handleFile(uri: Uri, model: CalcModel) {
+    private fun handleFile(absolutePath: String, model: CalcModel) {
         // Your code to handle the file here
         // For example, read the file, process its content, etc.
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.edit()
-            .putString(PreferenceConstants.ROM_PATH.toString(), uri.toString())
+            .putString(PreferenceConstants.ROM_PATH.toString(), absolutePath)
             .putBoolean(PreferenceConstants.FIRST_RUN.toString(), false)
             .putInt(PreferenceConstants.ROM_MODEL.toString(), model.modelInt)
             .apply()
 
-        Toast.makeText(this@ChooseFileActivity, "File good! $uri", Toast.LENGTH_LONG).show()
+        Toast.makeText(this@ChooseFileActivity, "File good! $absolutePath", Toast.LENGTH_LONG)
+            .show()
         startActivity(Intent(this, WabbitemuActivity::class.java))
     }
 }
