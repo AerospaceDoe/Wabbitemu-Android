@@ -83,6 +83,7 @@ class WabbitemuActivity : AppCompatActivity() {
         val fileName = lastRomSetting
         if (fileName != null) {
             val file = File(fileName)
+            Log.d("Wabbitemu", "onCreate: Loading rom file.")
             mCalcManager.loadRomFile(file) { errorCode ->
                 if (errorCode != 0) {
                     Log.e(
@@ -333,6 +334,8 @@ class WabbitemuActivity : AppCompatActivity() {
     }
 
     private fun launchBrowse() {
+        startActivity(Intent(this, ChooseFileActivity::class.java))
+        /*
         val setupIntent = Intent(this, BrowseActivity::class.java)
         // not perfect but it will work well enough
         val extensions = when (mCalcManager.model) {
@@ -351,7 +354,7 @@ class WabbitemuActivity : AppCompatActivity() {
         val description = resources.getString(R.string.browseFileDescription)
         setupIntent.putExtra(IntentConstants.EXTENSION_EXTRA_REGEX, extensions)
         setupIntent.putExtra(IntentConstants.BROWSE_DESCRIPTION_EXTRA_STRING, description)
-        startActivityForResult(setupIntent, LOAD_FILE_CODE)
+        startActivityForResult(setupIntent, LOAD_FILE_CODE)*/
     }
 
     private fun launchWizard() {

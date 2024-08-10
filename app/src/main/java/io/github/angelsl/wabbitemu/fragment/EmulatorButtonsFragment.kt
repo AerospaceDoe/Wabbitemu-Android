@@ -46,18 +46,21 @@ class EmulatorButtonsFragment: Fragment(R.layout.emulator_grid_of_buttons) {
                     text = button?.toString()
                     setOnTouchListener { v, event ->
                         v.performClick()
-                        val mapping = CalcKeyManager.KEY_MAPPINGS.find { it.key == button }
-                        button?.let { id ->
-                            if(event.action == MotionEvent.ACTION_DOWN) {
-                                Log.d("EmulatorButtonsFragment", "Key down: $button")
-                                keyManager.doKeyDown(id, mapping!!.group, mapping.bit)
-                            }
-                            else {
-                                Log.d("EmulatorButtonsFragment", "Key up: $button")
-                                keyManager.doKeyUp(id)
-                            }
-                            true
-                        } ?: false
+                        CalcKeyManager.KEY_MAPPINGS.find { it.key == button }?.let { mapping ->
+                            button?.let { id ->
+                                if(event.action == MotionEvent.ACTION_DOWN) {
+                                    Log.d("EmulatorButtonsFragment", "Key down: $button (${mapping?.group}, ${mapping?.bit})")
+                                    keyManager.doKeyDown(id, mapping.group, mapping.bit)
+                                } else {
+                                    Log.d("EmulatorButtonsFragment", "Key up: $button")
+                                    keyManager.doKeyUp(id)
+                                }
+                                true
+                            } ?: false
+                        }
+                            .also {
+                                Log.d("EmulatorButtonsFragment", "Mapping: $it")
+                            } == true
                     }
                 }
             }

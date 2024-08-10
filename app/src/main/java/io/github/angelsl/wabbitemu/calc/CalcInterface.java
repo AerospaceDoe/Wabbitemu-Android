@@ -1,5 +1,7 @@
 package io.github.angelsl.wabbitemu.calc;
 
+import android.net.Uri;
+
 import java.nio.IntBuffer;
 
 class CalcInterface {
@@ -26,6 +28,7 @@ class CalcInterface {
 
 	public static native void Initialize(String filePath);
 	public static native int LoadFile(String filePath);
+//	public static native int LoadFile(Uri uri);
 	public static native boolean SaveCalcState(String filePath);
 	public static native int CreateRom(String osPath, String bootPath, String romPath, int model);
 	public static native void ResetCalc();
