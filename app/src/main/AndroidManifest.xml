@@ -14,7 +14,7 @@
         android:hasCode="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.Light"
+        android:theme="@style/Theme.AppCompat.DayNight"
         android:hardwareAccelerated="true"
         android:largeHeap="true" >
 
@@ -33,10 +33,11 @@
         <activity android:name=".activity.ChooseFileActivity" android:exported="true" />
 
         <activity
-            android:name=".activity.WabbitemuActivity"
+            android:name=".activity.WabbitemuActivityJava"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:immersive="true"
             android:screenOrientation="portrait"
             android:exported="true"/>
 

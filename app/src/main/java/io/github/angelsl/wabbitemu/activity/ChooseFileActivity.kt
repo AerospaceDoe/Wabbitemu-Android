@@ -180,6 +180,6 @@ class ChooseFileActivity : ComponentActivity() {
 
         Toast.makeText(this@ChooseFileActivity, "File good! $absolutePath", Toast.LENGTH_LONG)
             .show()
-        startActivity(Intent(this, WabbitemuActivity::class.java))
+        startActivity(Intent(this, WabbitemuActivityJava::class.java))
     }
 }

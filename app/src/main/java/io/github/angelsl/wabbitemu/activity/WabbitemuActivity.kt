@@ -57,7 +57,7 @@ class WabbitemuActivity : AppCompatActivity() {
     private val mSkinLoader = SkinBitmapLoader.getInstance()
     private val mVisibilityListener = VisibilityChangeListener()
     private val mSharedPrefs by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
-    private var mEmulatorFragment: EmulatorButtonsFragment? = null
+    private var mEmulatorFragment: EmulatorFragment? = null
     private lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mDrawerList: ListView
     private var mWasUserLaunched = false
@@ -102,7 +102,7 @@ class WabbitemuActivity : AppCompatActivity() {
         setTheme(R.style.Wabbitemu)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         setContentView(R.layout.main)
-        mEmulatorFragment = supportFragmentManager.findFragmentById(R.id.content_frame) as EmulatorButtonsFragment
+        mEmulatorFragment = supportFragmentManager.findFragmentById(R.id.content_frame) as EmulatorFragment
         attachMenu()
         Log.d("Wabbitemu", "onCreate: isFirstRun: $isFirstRun, lastRomModel=$lastRomModel")
         if (isFirstRun) {
